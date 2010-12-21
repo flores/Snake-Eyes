@@ -1,14 +1,11 @@
-var jerk = require('jerk');
+requires.paths.unshift('vendor/node-irc/lib');
+
+var Client = require('irc').Client;
 var http = require('http');
 
-var options = {
-  server: 'eng.borderstylo.int',
-  nick: 'SnakeEyes',
-  channels: ['#rd', '#clients']
-};
+var irc = new Client('eng.borderstylo.int', 'SnakeEyes', { channels: [ '#clients', '#rd' ]});
 
-var irc = jerk(function (j) {}).connect(options);
-
+irc.on('motd', function () {
 http.createServer(function (req, res) {
   req.setEncoding('utf8');
 
@@ -20,4 +17,7 @@ http.createServer(function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
     res.end('Hello World\n');
   });
-}).listen(8124);
+:}).listen(8124);
+});
+
+

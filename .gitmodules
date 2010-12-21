@@ -1,0 +1,3 @@
+[submodule "vendor/node-irc"]
+	path = vendor/node-irc
+	url = https://github.com/martynsmith/node-irc.git
