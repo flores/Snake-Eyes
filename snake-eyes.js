@@ -27,7 +27,8 @@ irc.on('message', function (nick, to, text) {
     // general handling of messages to snakeeyes in a channel
     switch (text) {
       case 'SnakeEyes: reload':
-        irc.say(to, 'todo');
+        irc.say(to, 'goodbye, cruel world');
+	process.exit();
         break;
       default:
         irc.say(to, 'willis: what are you talking about?');
