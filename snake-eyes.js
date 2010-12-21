@@ -30,6 +30,14 @@ irc.on('message', function (nick, to, text) {
         irc.say(to, 'goodbye, cruel world');
 	process.exit();
         break;
+      case 'SnakeEyes: where are we going for lunch?':
+      var lunchSpots = ["Tere's", "Astro", "Peruvian", "Grub", "Xiomara", "Wow Bento",
+			"M Cafe", "Thai spot", "Pavillions Deli", "Larchmont"];
+	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
+	irc.say(to, 'Today we dine at ' + lunch + '. SnakeEyes has spoken.');
+	// todo: add chance that snakeyes will pick someone from the room at
+	// random to choose the lunch spot
+	break;
       default:
         irc.say(to, 'willis: what are you talking about?');
     }
