@@ -30,7 +30,7 @@ irc.on('message', function (nick, to, text) {
         irc.say(to, 'goodbye, cruel world');
 	process.exit();
         break;
-      case 'SnakeEyes: where are we going for lunch?':
+      case 'SnakeEyes: lunch':
       var lunchSpots = ["Tere's", "Astro", "Peruvian", "Grub", "Xiomara", "Wow Bento",
 			"M Cafe", "Thai spot", "Pavillions Deli", "Larchmont"];
 	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
