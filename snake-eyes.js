@@ -32,7 +32,8 @@ irc.on('message', function (nick, to, text) {
         break;
       case 'SnakeEyes: lunch':
       var lunchSpots = ["Tere's", "Astro", "Peruvian", "Grub", "Xiomara", "Wow Bento",
-			"M Cafe", "Thai spot", "Pavillions Deli", "Larchmont"];
+			"M Cafe", "Thai spot", "Pavillions Deli", "Larchmont", "Anarkali",
+			"some place with beer.  SnakeEyes likes beer"];
 	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
 	irc.say(to, 'Today we dine at ' + lunch + '. SnakeEyes has spoken.');
 	// todo: add chance that snakeyes will pick someone from the room at
