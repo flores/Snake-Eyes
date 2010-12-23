@@ -29,7 +29,7 @@ var watch = function (pattern, callback) {
 };
 
 irc.on('message', function (nick, to, text) {
-  if (/^#/.test(to) && (/^SnakeEyes:/.test(text))) {
+  if (/^#/.test(to) && (/^SnakeEyes:/i.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
     for (var i = 0; i < watchers.length; i++) {
