@@ -23,14 +23,15 @@ irc.on('motd', function () {
 });
 
 irc.on('message', function (nick, to, text) {
-  if (/^#/.test(to) && /^SnakeEyes:/.test(text)) {
+  if (/^#/.test(to) && (/^SnakeEyes:/.test(text))) {
     // general handling of messages to snakeeyes in a channel
-    switch (text) {
-      case 'SnakeEyes: reload':
+    var command = text.substr(10).trim();
+    switch (command) {
+      case 'reload':
         irc.say(to, 'goodbye, cruel world');
 	process.exit();
         break;
-      case 'SnakeEyes: lunch':
+      case 'lunch':
       var lunchSpots = ["Tere's", "Astro", "Peruvian", "Grub", "Xiomara", "Wow Bento",
 			"M Cafe", "Thai spot", "Pavillions Deli", "Larchmont", "Anarkali",
 			"some place with beer.  SnakeEyes likes beer"];
@@ -41,6 +42,12 @@ irc.on('message', function (nick, to, text) {
 	break;
       default:
         irc.say(to, 'willis: what are you talking about?');
+	break;
+    }
+  } else {
+    // responses to all non-command messages
+    if (text.toLowerCase().match(/firefox/) && Math.random()<=0.05) {
+      irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
   }
 });
