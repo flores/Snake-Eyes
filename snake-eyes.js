@@ -75,3 +75,14 @@ watch(/lunch/, function (nick, to, text) {
 	// todo: add chance that snakeyes will pick someone from the room at
 	// random to choose the lunch spot
 });
+
+watch(/daniel/i, function (nick, to, text) {
+  var danielInsults = [
+    "STFU Donny, er, Daniel",
+    "Forget it, Daniel, you're out of your element!",
+    "Daniel you're out of your element! Dude, the Chinaman is not the issue here!",
+    "He peed on the Dude's rug."
+  ];
+        var insult = [Math.floor(Math.random()*danielInsults.length)];
+        irc.say(to, insult);
+});
