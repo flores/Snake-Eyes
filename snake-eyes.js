@@ -38,9 +38,9 @@ irc.on('message', function (nick, to, text) {
         watcher.callback(nick, to, command);
         return;
       }
-      // default (for command it doesn't understand)
-      irc.say(to, 'willis: what are you talking about?');
     }
+    // default (for command it doesn't understand)
+    irc.say(to, 'willis: what are you talking about?');
   }
   else {
     // responses to all non-command messages
