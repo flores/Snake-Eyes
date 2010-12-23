@@ -50,12 +50,12 @@ irc.on('message', function (nick, to, text) {
   }
 });
 
-watch(/reload/, function (nick, to, text) {
+watch(/reload/i, function (nick, to, text) {
   irc.say(to, 'goodbye, cruel world');
 	process.exit();
 });
 
-watch(/lunch/, function (nick, to, text) {
+watch(/lunch/i, function (nick, to, text) {
   var lunchSpots = [
     "Tere's",
     "Astro",
@@ -83,6 +83,6 @@ watch(/daniel/i, function (nick, to, text) {
     "Daniel you're out of your element! Dude, the Chinaman is not the issue here!",
     "He peed on the Dude's rug."
   ];
-        var insult = [Math.floor(Math.random()*danielInsults.length)];
+        var insult = danielInsults[Math.floor(Math.random()*danielInsults.length)];
         irc.say(to, insult);
 });
