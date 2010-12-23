@@ -22,32 +22,56 @@ irc.on('motd', function () {
   http.createServer(httpHandler).listen(8124);
 });
 
+// simple router
+var watchers = [];
+var watch = function (pattern, callback) {
+  watchers.push({ pattern: pattern, callback: callback });
+};
+
 irc.on('message', function (nick, to, text) {
   if (/^#/.test(to) && (/^SnakeEyes:/.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
-    switch (command) {
-      case 'reload':
-        irc.say(to, 'goodbye, cruel world');
-	process.exit();
-        break;
-      case 'lunch':
-      var lunchSpots = ["Tere's", "Astro", "Peruvian", "Grub", "Xiomara", "Wow Bento",
-			"M Cafe", "Thai spot", "Pavillions Deli", "Larchmont", "Anarkali",
-			"some place with beer.  SnakeEyes likes beer"];
-	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
-	irc.say(to, 'Today we dine at ' + lunch + '. SnakeEyes has spoken.');
-	// todo: add chance that snakeyes will pick someone from the room at
-	// random to choose the lunch spot
-	break;
-      default:
-        irc.say(to, 'willis: what are you talking about?');
-	break;
+    for (var i = 0; i < watchers.length; i++) {
+      var watcher = watchers[i];
+      if (watcher.pattern.test(command)) {
+        watcher.callback(nick, to, command);
+        return;
+      }
+      // default (for command it doesn't understand)
+      irc.say(to, 'willis: what are you talking about?');
     }
-  } else {
+  }
+  else {
     // responses to all non-command messages
     if (text.toLowerCase().match(/firefox/) && Math.random()<=0.05) {
       irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
   }
+});
+
+watch(/reload/, function (nick, to, text) {
+  irc.say(to, 'goodbye, cruel world');
+	process.exit();
+});
+
+watch(/lunch/, function (nick, to, text) {
+  var lunchSpots = [
+    "Tere's",
+    "Astro",
+    "Peruvian",
+    "Grub",
+    "Xiomara",
+    "Wow Bento",
+    "M Cafe",
+    "Thai spot",
+    "Pavillions Deli",
+    "Larchmont",
+    "Anarkali",
+    "some place with beer.  SnakeEyes likes beer"
+  ];
+	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
+	irc.say(to, 'Today we dine at ' + lunch + '. SnakeEyes has spoken.');
+	// todo: add chance that snakeyes will pick someone from the room at
+	// random to choose the lunch spot
 });
