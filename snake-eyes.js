@@ -1,8 +1,13 @@
 require.paths.unshift('vendor/node-irc/lib');
+require.paths.unshift('vendor/elizabot');
 
-var Client = require('irc').Client;
-var http = require('http');
+var Client = require('irc').Client,
+    http = require('http'),
+    ElizaBot = require('elizabot').ElizaBot;
 
+var eliza = new ElizaBot();
+// throw away initial (do I need to do this?)
+eliza.getInitial();
 
 var irc = new Client('eng.borderstylo.int', 'SnakeEyes', { channels: [ '#clients', '#rd' ]});
 
@@ -40,7 +45,7 @@ irc.on('message', function (nick, to, text) {
       }
     }
     // default (for command it doesn't understand)
-    irc.say(to, 'willis: what are you talking about?');
+    irc.say(to, nick + ': ' + eliza.transform(command));
   }
   else {
     // responses to all non-command messages
