@@ -682,16 +682,14 @@ ElizaBot.prototype.reset = function() {
 ElizaBot.prototype._dataParsed = false;
 
 ElizaBot.prototype._init = function() {
-	// install ref to global object
-	var global=ElizaBot.prototype.global=this;
 	// parse data and convert it from canonical form to internal use
 	// prodoce synonym list
 	var synPatterns={};
-	if ((global.elizaSynons) && (typeof elizaSynons == 'object')) {
+	if (typeof elizaSynons == 'object') {
 		for (var i in elizaSynons) synPatterns[i]='('+i+'|'+elizaSynons[i].join('|')+')';
 	}
 	// check for keywords or install empty structure to prevent any errors
-	if ((!global.elizaKeywords) || (typeof elizaKeywords.length == 'undefined')) {
+	if (typeof elizaKeywords.length == 'undefined') {
 		elizaKeywords=[['###',0,[['###',[]]]]];
 	}
 	// 1st convert rules to regexps
@@ -767,7 +765,7 @@ ElizaBot.prototype._init = function() {
 	// and compose regexps and refs for pres and posts
 	ElizaBot.prototype.pres={};
 	ElizaBot.prototype.posts={};
-	if ((global.elizaPres) && (elizaPres.length)) {
+	if (elizaPres.length) {
 		var a=new Array();
 		for (var i=0; i<elizaPres.length; i+=2) {
 			a.push(elizaPres[i]);
@@ -780,7 +778,7 @@ ElizaBot.prototype._init = function() {
 		ElizaBot.prototype.preExp = /####/;
 		ElizaBot.prototype.pres['####']='####';
 	}
-	if ((global.elizaPosts) && (elizaPosts.length)) {
+	if (elizaPosts.length) {
 		var a=new Array();
 		for (var i=0; i<elizaPosts.length; i+=2) {
 			a.push(elizaPosts[i]);
@@ -794,7 +792,7 @@ ElizaBot.prototype._init = function() {
 		ElizaBot.prototype.posts['####']='####';
 	}
 	// check for elizaQuits and install default if missing
-	if ((!global.elizaQuits) || (typeof elizaQuits.length == 'undefined')) {
+	if (typeof elizaQuits.length == 'undefined') {
 		elizaQuits=[];
 	}
 	// done
@@ -934,7 +932,7 @@ ElizaBot.prototype._postTransform = function(s) {
 	// final cleanings
 	s=s.replace(/\s{2,}/g, ' ');
 	s=s.replace(/\s+\./g, '.');
-	if ((this.global.elizaPostTransforms) && (elizaPostTransforms.length)) {
+	if (elizaPostTransforms.length) {
 		for (var i=0; i<elizaPostTransforms.length; i+=2) {
 			s=s.replace(elizaPostTransforms[i], elizaPostTransforms[i+1]);
 			elizaPostTransforms[i].lastIndex=0;
@@ -976,12 +974,12 @@ ElizaBot.prototype._memGet = function() {
 }
 
 ElizaBot.prototype.getFinal = function() {
-	if (!ElizaBot.prototype.global.elizaFinals) return '';
+	if (elizaFinals) return '';
 	return elizaFinals[Math.floor(Math.random()*elizaFinals.length)];
 }
 
 ElizaBot.prototype.getInitial = function() {
-	if (!ElizaBot.prototype.global.elizaInitials) return '';
+	if (elizaInitials) return '';
 	return elizaInitials[Math.floor(Math.random()*elizaInitials.length)];
 }
 

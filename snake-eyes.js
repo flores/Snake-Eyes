@@ -46,6 +46,7 @@ irc.on('message', function (nick, to, text) {
     }
     // default (for command it doesn't understand)
     irc.say(to, nick + ': ' + eliza.transform(command));
+    if (eliza.quit) { eliza.reset(); }
   }
   else {
     // responses to all non-command messages
