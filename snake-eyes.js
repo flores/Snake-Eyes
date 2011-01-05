@@ -49,7 +49,7 @@ irc.on('message', function (nick, to, text) {
   }
   else {
     // responses to all non-command messages
-    if (text.toLowerCase().match(/firefox/) && Math.random()<=0.05) {
+    if (text.toLowerCase().match(/firefox/) && Math.random()<=0.15) {
       irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
   }
