@@ -9,7 +9,7 @@ var eliza = new ElizaBot();
 // throw away initial (do I need to do this?)
 eliza.getInitial();
 
-var irc = new Client('eng.borderstylo.int', 'SnakeEyes', { channels: [ '#clients', '#rd' ]});
+var irc = new Client('irc.borderstylo.com', 'SnakeEyes', { channels: [ '#clients', '#rd' ]});
 
 var httpHandler = function (req, res) {
   req.setEncoding('utf8');
