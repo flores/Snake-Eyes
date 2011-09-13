@@ -63,18 +63,20 @@ watch(/reload/i, function (nick, to, text) {
 
 watch(/lunch/i, function (nick, to, text) {
   var lunchSpots = [
-    "Tere's",
-    "Astro",
-    "Peruvian",
-    "Grub",
-    "Xiomara",
-    "Wow Bento",
-    "M Cafe",
+    "Tere's", 
+    "Buddha's Belly",
+    "Lulu's",
+    "Kokomo",
+    "Drinking Lunch",
+    "India's Oven",
+    "The Indian place next to the German place",
     "Thai spot",
-    "Pavillions Deli",
-    "Larchmont",
-    "Anarkali",
-    "some place with beer.  SnakeEyes likes beer"
+    "Wirsthaus",
+    "Tinga",
+    "Bulan Thai Vegetarian",
+    "M Cafe",
+    "LaLa's",
+    "Explore Fairfax, you cautious bitches."
   ];
 	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
 	irc.say(to, 'Today we dine at ' + lunch + '. SnakeEyes has spoken.');
