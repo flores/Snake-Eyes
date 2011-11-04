@@ -37,7 +37,7 @@ var watch = function (pattern, callback) {
   watchers.push({ pattern: pattern, callback: callback });
 };
 
-irc.on('message', function (nick, to, text) {
+/* irc.on('message', function (nick, to, text) {
   if (/^#/.test(to) && (/^SnakeEyes:/i.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
@@ -60,31 +60,39 @@ irc.on('message', function (nick, to, text) {
   }
 });
 
+*/
+
 // if someone joins a dead room, give them the option to notify a developer
 irc.on('join', function (to, nick) {
     // weak sleep
     if ( nick == botname ) return;
-    var message_wait = 60000;
+    var message_wait = 30000;
     var now = new Date().getTime();
-    irc.say( to, "hi " + nick + ". i see you got here at " + now );
+    //irc.say( to, "hi " + nick + ". i see you got here at " + now );
     var newmessage = 0;
-    while( new Date().getTime() < now + message_wait ) {
-      irc.on( 'message', function ( nick_last, to, text ) {
+    function waitforNewMessage() {
+      irc.on( 'message', function ( nick_last, join_channel, text ) {
         if ( nick_last == nick ) {
-          irc.say( to, "since this was the same guy, it doesn't count as a message" );
+          //irc.say ( to, "this is the same guy, so let's pretend it's not a new message" );
+          return;
         }
         else
         {
-          newmessage = 1;
-          irc.say( to, "i think this is a new msg" );
-          
+          //irc.say ( to, "i think this is a new message" );
+          newmessage = 1
+          return;
         }
-      })
-    }
-
-    if (newmessage == 0) {
-      irc.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
-    }
+    });
+    };
+    
+    t = setInterval( waitforNewMessage(), message_wait / 10 );
+    
+    setTimeout( function() {
+      if (newmessage == 0) {
+        irc.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
+      }
+      clearInterval(t);
+    }, message_wait );
 });
 
 watch(/find a dev/i, function ( nick, to, text ) {
