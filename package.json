@@ -1,0 +1,11 @@
+{
+  "name": "snake-eyes",
+  "description": "A helpfull irc bot and http listener",
+  "version": "0.0.1",
+  "author": "bosty <github@borderstylo.com>",
+  "dependencies": {
+    "irc": ">= 0.3.2"
+  },
+  "engine": "node 0.4.12"
+}
+
