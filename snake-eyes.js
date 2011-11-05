@@ -154,12 +154,15 @@ irc_public.on('join', function(to, nick) {
   // auto-op
   if ( opusers_public.indexOf( nick ) ) {
     irc_public.send('mode', to, '+o', nick);
+    return;
   }
 
   var message_wait = 60000;
   irc_public.say( to, "hi " + nick );
+  
+  // if someone joins an inactive room, give them the option to 
+  // find a developer
   var newmessage = 0;
-  // if someone joins an inactive room, give them the option to notify a developer
   function waitforNewMessage() {
     irc_public.on( 'message', function ( nick_last, join_channel, text ) {
       if ( nick_last == nick ) {
