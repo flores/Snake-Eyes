@@ -12,12 +12,12 @@ var ElizaBot         = require('elizabot').ElizaBot;
 var botname_public   = "spirebot";
 var server_public    = "chat.freenode.com";
 var channel_public   = "#spire";
-var botname_private  = "snakeeyes";
-var server_private   = "127.0.0.1";
+var botname_private  = "snake-eyes";
+var server_private   = "irc.borderstylo.com";
 var channel_private  = [ 
-                       "clients", 
-                       "ops",
-                       "shark"
+                       "#clients", 
+                       "#ops",
+                       "#shark"
 ];
 
 // we make an http server to listen for 
@@ -55,7 +55,7 @@ var irc = new Client(
 var irc_public = new Client( 
   server_public, 
   botname_public, 
-  { channels: channel_public }
+  { channels: [ channel_public ] }
 );
 
 // set up the http server
@@ -165,7 +165,7 @@ irc_public.on('join', function (to, nick) {
 irc_public.on('message', function (nick, to, text) {
     if(( /find a dev/.test( text )) && ( nick != botname_public )) {
       // check for work hours
-      var now  = new Date().getTime();
+      var now  = new Date();
       var hour = now.getHours();
       var day  = now.getDay();
 
@@ -175,10 +175,10 @@ irc_public.on('message', function (nick, to, text) {
         irc_public.say( to, nick + ": pinged the nerds! if they're not here soon, try emailing support@spire.io" );
       }
       else {
-        irc.say( to, nick + ": i'm looking for nerds, but they work in California from 10am - 7pm Pacific, so no promises" );
+        irc_public.say( to, nick + ": i'm looking for nerds, but they work in California from 10am - 7pm Pacific, so no promises" );
         irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net." );
         irc.say( "#shark", "TEST: " + nick + " knows it's off hours." );
-        irc.say( to, nick + ": if no one shows up soon, you can also email them at support@spire.io" );
+        irc_public.say( to, nick + ": if no one shows up soon, you can also email them at support@spire.io" );
       }
     }
 });
