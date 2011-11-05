@@ -207,3 +207,11 @@ irc_public.on('message', function (nick, to, text) {
     }
 });
 
+// log errors to stdout
+irc.on('error', function(text) {
+  console.log(text);
+});
+
+irc_public.on('error', function(text) {
+  console.log(text);
+});
