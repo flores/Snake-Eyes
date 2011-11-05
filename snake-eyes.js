@@ -1,22 +1,70 @@
+#!/usr/bin/env node
+
 require.paths.unshift('vendor/node-irc/lib');
 require.paths.unshift('vendor/elizabot');
 
-var Client = require('irc').Client,
-    http = require('http'),
-    ElizaBot = require('elizabot').ElizaBot;
-      
-var int_Client   = require('irc').Client;
-var internal_irc = new int_Client( 'irc.borderstylo.com', 'spirebot', { channels: [ '#shark' ]});
+var Client           = require('irc').Client;
+var http             = require('http');
+var ElizaBot         = require('elizabot').ElizaBot;
 
-var eliza = new ElizaBot();
-// throw away initial (do I need to do this?)
-eliza.getInitial();
+// configuration
+// irc
+var botname_public   = "spirebot";
+var server_public    = "chat.freenode.com";
+var channel_public   = "#spire";
+var botname_private  = "snakeeyes";
+var server_private   = "127.0.0.1";
+var channel_private  = [ 
+                       "clients", 
+                       "ops",
+                       "shark"
+];
 
-var join_server  = "chat.freenode.com";
-var botname      = "spire_bot";
-var join_channel = "#spire";
+// we make an http server to listen for 
+// continuous integration hooks from CI Joe.
+var http_port        = 8124
 
-var irc = new Client( join_server, botname, { channels: [ join_channel ]});
+// #devlife
+var lunchSpots       = [
+                       "Tere's", 
+                       "Buddha's Belly",
+                       "Lulu's",
+                       "Kokomo",
+                       "Drinking Lunch",
+                       "India's Oven",
+                       "The Indian place next to the German place",
+                       "Thai spot",
+                       "Wirsthaus",
+                       "Tinga",
+                       "Bulan Thai Vegetarian",
+                       "M Cafe",
+                       "LaLa's",
+                       "Explore Fairfax, you cautious bitches."
+  ];
+
+
+// k.
+
+
+// set up the irc clients
+var irc = new Client( 
+  server_private, 
+  botname_private, 
+  { channels: channel_private }
+);
+var irc_public = new Client( 
+  server_public, 
+  botname_public, 
+  { channels: channel_public }
+);
+
+// set up the http server
+var http = require('http');
+  
+irc.on('motd', function () {
+  // don't start listening for http traffic until connected on irc
+  http.createServer( httpHandler ).listen( http_port );
+});
 
 var httpHandler = function (req, res) {
   req.setEncoding('utf8');
@@ -29,44 +77,10 @@ var httpHandler = function (req, res) {
   req.on('end', function () { res.writeHead(204); res.end(); });
 };
 
-irc.on('motd', function () {
-  // don't start listening for http traffic until connected on irc
-  http.createServer(httpHandler).listen(8124);
-});
-
-
-// if someone joins an inactive room, give them the option to notify a developer
-irc.on('join', function (to, nick) {
-    // weak sleep
-    if ( nick == botname ) return;
-    var message_wait = 30000;
-    irc.say( to, "hi " + nick );
-    var newmessage = 0;
-    function waitforNewMessage() {
-      irc.on( 'message', function ( nick_last, join_channel, text ) {
-        if ( nick_last == nick ) {
-          //irc.say ( to, "this is the same guy, so let's pretend it's not a new message" );
-          return;
-        }
-        else
-        {
-          //irc.say ( to, "i think this is a new message" );
-          newmessage = 1
-          return;
-        }
-      });
-    };
-    
-    t = setInterval( waitforNewMessage(), message_wait / 10 );
-    
-    setTimeout( function() {
-      if (newmessage == 0) {
-        irc.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
-      }
-      clearInterval(t);
-    }, message_wait );
-});
-
+// give it some personality
+var eliza = new ElizaBot();
+// throw away initial (do I need to do this?)
+eliza.getInitial();
 
 // simple router
 var watchers = [];
@@ -74,8 +88,10 @@ var watch = function (pattern, callback) {
   watchers.push({ pattern: pattern, callback: callback });
 };
 
+// nerdery on the internal irc server
 irc.on('message', function (nick, to, text) {
-  if (/^#/.test(to) && (/^spire.+/i.test(text))) {
+  var nameRegEx = new RegEx( '^' + botname_private, 'i' );
+  if (/^#/.test(to) && (nameRegEx.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
     for (var i = 0; i < watchers.length; i++) {
@@ -103,54 +119,66 @@ watch(/reload/i, function (nick, to, text) {
 });
 
 watch(/lunch/i, function (nick, to, text) {
-  var lunchSpots = [
-    "Tere's", 
-    "Buddha's Belly",
-    "Lulu's",
-    "Kokomo",
-    "Drinking Lunch",
-    "India's Oven",
-    "The Indian place next to the German place",
-    "Thai spot",
-    "Wirsthaus",
-    "Tinga",
-    "Bulan Thai Vegetarian",
-    "M Cafe",
-    "LaLa's",
-    "Explore Fairfax, you cautious bitches."
-  ];
-	var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
-	irc.say(to, 'Today we dine at ' + lunch + '. ' + botname + ' has spoken.');
-	// todo: add chance that snakeyes will pick someone from the room at
-	// random to choose the lunch spot
+  var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
+  irc.say(to, 'Today we dine at ' + lunch + '. ' + botname_private + ' has spoken.');
+  // todo: add chance that snakeyes will pick someone from the room at
+  // random to choose the lunch spot
 });
 
-/* watch(/daniel/i, function (nick, to, text) {
-  var danielInsults = [
-    "STFU Donny... er, Daniel",
-    "Forget it, Daniel, you're out of your element!",
-    "Daniel you're out of your element! Dude, the Chinaman is not the issue here!",
-    "He peed on the Dude's rug."
-  ];
-        var insult = danielInsults[Math.floor(Math.random()*danielInsults.length)];
-        irc.say(to, insult);
+// nerdery on the external irc server
+
+// if someone joins an inactive room, give them the option to notify a developer
+irc_public.on('join', function (to, nick) {
+
+  // the bot doesn't care about his own messages
+  if ( nick == botname_public ) return;
+
+  var message_wait = 60000;
+  irc_public.say( to, "hi " + nick );
+  var newmessage = 0;
+
+  function waitforNewMessage() {
+    irc_public.on( 'message', function ( nick_last, join_channel, text ) {
+      if ( nick_last == nick ) {
+        //irc.say ( to, "this is the same guy, so let's pretend it's not a new message" );
+      }
+      else
+      {
+        //irc.say ( to, "i think this is a new message" );
+        newmessage = 1
+        return;
+      }
+    });
+  };
+  
+  // see if anyone is talking
+  checkforNewMessage = setInterval( waitforNewMessage(), message_wait / 10 );
+    
+  setTimeout( function() {
+    if (newmessage == 0) {
+      irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
+    }
+    clearInterval(checkforNewMessage);
+  }, message_wait );
 });
-*/
 
+irc_public.on('message', function (nick, to, text) {
+    if(( /find a dev/.test( text )) && ( nick != botname_public )) {
+      // check for work hours
+      var now  = new Date().getTime();
+      var hour = now.getHours();
+      var day  = now.getDay();
 
-// make sure we don't send that notification in the middle of the night
-watch(/find a dev/i, function ( nick, to, text ) {
-/*    var now  = new Date().getTime();
-    var hour = now.getHours();
-    var day  = now.getDay();
-*/
-    //if ( hour >= 10 && hour <= 19 && day >= 1 && day <= 1 ) {
-      irc.say( to, "doing it..." );
-      internal_irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net" );
-      irc.say( to, "pinged the nerds! if they're not here soon, try emailing support@spire.io" );
-    //}
-    /*else {
-      irc.say( join_channel, "i pinged the nerds, but they work in California from 10am - 7pm Pacific." );
-      irc.say( join_channel, "you can also email them at support@spire.io" );
-    }*/
+      if (( hour >= 10 ) && ( hour <= 19 ) && ( day >= 1 ) && ( day <= 5 )) {
+        irc_public.say( to, nick + ": doing it..." );
+        irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net" );
+        irc_public.say( to, nick + ": pinged the nerds! if they're not here soon, try emailing support@spire.io" );
+      }
+      else {
+        irc.say( to, nick + ": i'm looking for nerds, but they work in California from 10am - 7pm Pacific, so no promises" );
+        irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net." );
+        irc.say( "#shark", "TEST: " + nick + " knows it's off hours." );
+        irc.say( to, nick + ": if no one shows up soon, you can also email them at support@spire.io" );
+      }
+    }
 });
