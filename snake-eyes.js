@@ -4,6 +4,9 @@ require.paths.unshift('vendor/elizabot');
 var Client = require('irc').Client,
     http = require('http'),
     ElizaBot = require('elizabot').ElizaBot;
+      
+var int_Client   = require('irc').Client;
+var internal_irc = new int_Client( 'irc.borderstylo.com', 'spirebot', { channels: [ '#shark' ]});
 
 var eliza = new ElizaBot();
 // throw away initial (do I need to do this?)
@@ -31,14 +34,48 @@ irc.on('motd', function () {
   http.createServer(httpHandler).listen(8124);
 });
 
+
+// if someone joins an inactive room, give them the option to notify a developer
+irc.on('join', function (to, nick) {
+    // weak sleep
+    if ( nick == botname ) return;
+    var message_wait = 30000;
+    irc.say( to, "hi " + nick );
+    var newmessage = 0;
+    function waitforNewMessage() {
+      irc.on( 'message', function ( nick_last, join_channel, text ) {
+        if ( nick_last == nick ) {
+          //irc.say ( to, "this is the same guy, so let's pretend it's not a new message" );
+          return;
+        }
+        else
+        {
+          //irc.say ( to, "i think this is a new message" );
+          newmessage = 1
+          return;
+        }
+      });
+    };
+    
+    t = setInterval( waitforNewMessage(), message_wait / 10 );
+    
+    setTimeout( function() {
+      if (newmessage == 0) {
+        irc.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
+      }
+      clearInterval(t);
+    }, message_wait );
+});
+
+
 // simple router
 var watchers = [];
 var watch = function (pattern, callback) {
   watchers.push({ pattern: pattern, callback: callback });
 };
 
-/* irc.on('message', function (nick, to, text) {
-  if (/^#/.test(to) && (/^SnakeEyes:/i.test(text))) {
+irc.on('message', function (nick, to, text) {
+  if (/^#/.test(to) && (/^spire.+/i.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
     for (var i = 0; i < watchers.length; i++) {
@@ -59,45 +96,6 @@ var watch = function (pattern, callback) {
     }
   }
 });
-
-*/
-
-// if someone joins a dead room, give them the option to notify a developer
-irc.on('join', function (to, nick) {
-    // weak sleep
-    if ( nick == botname ) return;
-    var message_wait = 30000;
-    var now = new Date().getTime();
-    //irc.say( to, "hi " + nick + ". i see you got here at " + now );
-    var newmessage = 0;
-    function waitforNewMessage() {
-      irc.on( 'message', function ( nick_last, join_channel, text ) {
-        if ( nick_last == nick ) {
-          //irc.say ( to, "this is the same guy, so let's pretend it's not a new message" );
-          return;
-        }
-        else
-        {
-          //irc.say ( to, "i think this is a new message" );
-          newmessage = 1
-          return;
-        }
-    });
-    };
-    
-    t = setInterval( waitforNewMessage(), message_wait / 10 );
-    
-    setTimeout( function() {
-      if (newmessage == 0) {
-        irc.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
-      }
-      clearInterval(t);
-    }, message_wait );
-});
-
-watch(/find a dev/i, function ( nick, to, text ) {
-});
-
 
 watch(/reload/i, function (nick, to, text) {
   irc.say(to, 'goodbye, cruel world');
@@ -138,3 +136,21 @@ watch(/lunch/i, function (nick, to, text) {
         irc.say(to, insult);
 });
 */
+
+
+// make sure we don't send that notification in the middle of the night
+watch(/find a dev/i, function ( nick, to, text ) {
+/*    var now  = new Date().getTime();
+    var hour = now.getHours();
+    var day  = now.getDay();
+*/
+    //if ( hour >= 10 && hour <= 19 && day >= 1 && day <= 1 ) {
+      irc.say( to, "doing it..." );
+      internal_irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net" );
+      irc.say( to, "pinged the nerds! if they're not here soon, try emailing support@spire.io" );
+    //}
+    /*else {
+      irc.say( join_channel, "i pinged the nerds, but they work in California from 10am - 7pm Pacific." );
+      irc.say( join_channel, "you can also email them at support@spire.io" );
+    }*/
+});
