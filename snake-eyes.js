@@ -8,21 +8,29 @@ var http             = require('http');
 var ElizaBot         = require('elizabot').ElizaBot;
 
 // configuration
-// irc
+// irc.  server names, guys to auto-op, etc
 var botname_public   = "spirebot";
 var server_public    = "chat.freenode.com";
 var channel_public   = "#spire";
+var opusers_public   = [
+                       "dyoder",
+                       "jxson",
+                       "werwolf",
+                       "lo-fi"
+];
+
 var botname_private  = "snake-eyes";
 var server_private   = "irc.borderstylo.com";
 var channel_private  = [ 
                        "#clients", 
                        "#ops",
-                       "#shark"
+                       "#shark",
+                       "#pie"
 ];
-
+                       
 // we make an http server to listen for 
 // continuous integration hooks from CI Joe.
-var http_port        = 8124
+var http_port        = 8124;
 
 // #devlife
 var lunchSpots       = [
@@ -88,10 +96,16 @@ var watch = function (pattern, callback) {
   watchers.push({ pattern: pattern, callback: callback });
 };
 
+// op everyone internally
+irc.on('join', function (channel, nick) {
+  console.log(channel + " is channel and " + nick + " is nick");
+  irc.send('mode', channel, '+o', nick);
+});
+
 // nerdery on the internal irc server
 irc.on('message', function (nick, to, text) {
-  var nameRegEx = new RegEx( '^' + botname_private, 'i' );
-  if (/^#/.test(to) && (nameRegEx.test(text))) {
+  var nameRegExp = new RegExp( '^' + botname_private, 'i' );
+  if (/^#/.test(to) && (nameRegExp.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
     for (var i = 0; i < watchers.length; i++) {
@@ -110,6 +124,11 @@ irc.on('message', function (nick, to, text) {
     if (text.toLowerCase().match(/firefox/) && Math.random()<=0.15) {
       irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
+    // never question snake-eyes
+    if ( text.match(/why.+(does|is).+have.+op.+/i) ) {
+      irc.send('mode', to, '-o', nick);
+      irc.say(to, nick + ": " + botname_private + " has spoken.");
+    }
   }
 });
 
@@ -127,16 +146,20 @@ watch(/lunch/i, function (nick, to, text) {
 
 // nerdery on the external irc server
 
-// if someone joins an inactive room, give them the option to notify a developer
-irc_public.on('join', function (to, nick) {
+irc_public.on('join', function(to, nick) {
 
   // the bot doesn't care about his own messages
   if ( nick == botname_public ) return;
 
+  // auto-op
+  if ( opusers_public.indexOf( nick ) ) {
+    irc_public.send('mode', to, '+o', nick);
+  }
+
   var message_wait = 60000;
   irc_public.say( to, "hi " + nick );
   var newmessage = 0;
-
+  // if someone joins an inactive room, give them the option to notify a developer
   function waitforNewMessage() {
     irc_public.on( 'message', function ( nick_last, join_channel, text ) {
       if ( nick_last == nick ) {
@@ -162,6 +185,7 @@ irc_public.on('join', function (to, nick) {
   }, message_wait );
 });
 
+
 irc_public.on('message', function (nick, to, text) {
     if(( /find a dev/.test( text )) && ( nick != botname_public )) {
       // check for work hours
@@ -182,3 +206,4 @@ irc_public.on('message', function (nick, to, text) {
       }
     }
 });
+
