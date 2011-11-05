@@ -90,8 +90,8 @@ var watch = function (pattern, callback) {
 
 // nerdery on the internal irc server
 irc.on('message', function (nick, to, text) {
-  var nameRegEx = new RegEx( '^' + botname_private, 'i' );
-  if (/^#/.test(to) && (nameRegEx.test(text))) {
+  var nameRegExp = new RegExp( '^' + botname_private, 'i' );
+  if (/^#/.test(to) && (nameRegExp.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
     for (var i = 0; i < watchers.length; i++) {
