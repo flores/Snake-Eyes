@@ -25,7 +25,7 @@ var channel_private  = [
                        "#clients", 
                        "#ops",
                        "#shark",
-                       "#pie"
+                       "#pv"
 ];
                        
 // we make an http server to listen for 
@@ -98,7 +98,6 @@ var watch = function (pattern, callback) {
 
 // op everyone internally
 irc.on('join', function (channel, nick) {
-  console.log(channel + " is channel and " + nick + " is nick");
   irc.send('mode', channel, '+o', nick);
 });
 
@@ -152,16 +151,16 @@ irc_public.on('join', function(to, nick) {
   if ( nick == botname_public ) return;
 
   // auto-op
-  if ( opusers_public.indexOf( nick ) ) {
+  if ( opusers_public.indexOf( nick ) >= 0 ) {
     irc_public.send('mode', to, '+o', nick);
     return;
   }
 
-  var message_wait = 60000;
   irc_public.say( to, "hi " + nick );
   
   // if someone joins an inactive room, give them the option to 
   // find a developer
+  var message_wait = 60000;
   var newmessage = 0;
   function waitforNewMessage() {
     irc_public.on( 'message', function ( nick_last, join_channel, text ) {
@@ -203,8 +202,8 @@ irc_public.on('message', function (nick, to, text) {
       }
       else {
         irc_public.say( to, nick + ": i'm looking for nerds, but they work in California from 10am - 7pm Pacific, so no promises" );
-        irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net." );
-        irc.say( "#shark", "TEST: " + nick + " knows it's off hours." );
+        irc.say( "#shark", "hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net...");
+        irc.say( "#shark", nick + " knows it's off hours." );
         irc_public.say( to, nick + ": if no one shows up soon, you can also email them at support@spire.io" );
       }
     }
