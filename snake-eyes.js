@@ -134,6 +134,7 @@ irc.on('message', function (nick, to, text) {
 // never question snake-eyes on direct messages either.
 // doing it twice to use the cool router.
 watch(/\sop(s)?.+/i, function (nick, to, text) {
+  irc.send('mode', to, '-o', nick);
   irc.say(to, nick + ": " + botname_private + " has spoken.");
 });
 
