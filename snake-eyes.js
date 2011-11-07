@@ -124,11 +124,17 @@ irc.on('message', function (nick, to, text) {
       irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
     // never question snake-eyes
-    if ( text.match(/why.+(does|is).+have.+op.+/i) ) {
+    if ( text.match(/(why|what).+(do|with)\sop(s)(\s|\?)?.+/i) ) {
       irc.send('mode', to, '-o', nick);
       irc.say(to, nick + ": " + botname_private + " has spoken.");
     }
   }
+});
+
+// never question snake-eyes on direct messages either.
+// doing it twice to use the cool router.
+watch(/\sop(s)?.+/i, function (nick, to, text) {
+  irc.say(to, nick + ": " + botname_private + " has spoken.");
 });
 
 watch(/reload/i, function (nick, to, text) {
@@ -156,11 +162,11 @@ irc_public.on('join', function(to, nick) {
     return;
   }
 
+  var message_wait = 60000;
   irc_public.say( to, "hi " + nick );
   
   // if someone joins an inactive room, give them the option to 
   // find a developer
-  var message_wait = 60000;
   var newmessage = 0;
   function waitforNewMessage() {
     irc_public.on( 'message', function ( nick_last, join_channel, text ) {
@@ -197,7 +203,7 @@ irc_public.on('message', function (nick, to, text) {
 
       if (( hour >= 10 ) && ( hour <= 19 ) && ( day >= 1 ) && ( day <= 5 )) {
         irc_public.say( to, nick + ": doing it..." );
-        irc.say( "#shark", "TEST: hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net" );
+        irc.say( "#shark", "hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net" );
         irc_public.say( to, nick + ": pinged the nerds! if they're not here soon, try emailing support@spire.io" );
       }
       else {
