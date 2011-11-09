@@ -140,7 +140,7 @@ irc.on('message', function (nick, to, text) {
       irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
     // never question snake-eyes
-    if ( text.match(/(why|what).+(do|with)\sop(s)(\s|\?)?.+/i) ) {
+    if ( text.match(/(why|what).+\sop(s)?.*/i) ) {
       irc.send('mode', to, '-o', nick);
       irc.say(to, nick + ": " + botname_private + " has spoken.");
     }
@@ -149,7 +149,7 @@ irc.on('message', function (nick, to, text) {
 
 // never question snake-eyes on direct messages either.
 // doing it twice to use the cool router.
-watch(/\sop(s)?.+/i, function (nick, to, text) {
+watch(/\sop(s)?.*/i, function (nick, to, text) {
   irc.send('mode', to, '-o', nick);
   irc.say(to, nick + ": " + botname_private + " has spoken.");
 });
