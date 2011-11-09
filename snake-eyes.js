@@ -22,15 +22,12 @@ var opusers_public   = [
 var botname_private  = "snake-eyes";
 var server_private   = "irc.borderstylo.com";
 var channel_private  = [ 
-                       "#clients", 
+                       "#clients",
                        "#ops",
                        "#shark",
-                       "#pv"
+                       "#pv",
+                       "#mobile"
 ];
-                       
-// we make an http server to listen for 
-// continuous integration hooks from CI Joe.
-var http_port        = 8124;
 
 // #devlife
 var lunchSpots       = [
@@ -50,9 +47,28 @@ var lunchSpots       = [
                        "Explore Fairfax, you cautious bitches."
   ];
 
+// we make an http server to listen for 
+// continuous integration hooks from CI Joe.
+var http_port        = 8124;
+
+// want the bot to tweet notifications out?
+// set this up (move twitter_settings.js.example to twitter_settings.js)
+try {
+  var twitter_settings = require('./twitter_settings'); 
+  var sys   = require('sys');
+  var twitter = require('twitter');
+  var twit = new twitter({
+   consumer_key:        twitter_settings.consumer_key,
+   consumer_secret:     twitter_settings.consumer_secret,
+   access_token_key:    twitter_settings.access_token_key,
+   access_token_secret: twitter_settings.access_token_secret
+  });
+} catch(e) {
+  var twit = undefined;
+  console.log("if you'd like to tweet notifications, please move twitter_settings.js.example to twitter_settings.js");
+}
 
 // k.
-
 
 // set up the irc clients
 var irc = new Client( 
@@ -85,7 +101,7 @@ var httpHandler = function (req, res) {
   req.on('end', function () { res.writeHead(204); res.end(); });
 };
 
-// give it some personality
+// give the bot some personality
 var eliza = new ElizaBot();
 // throw away initial (do I need to do this?)
 eliza.getInitial();
@@ -124,7 +140,7 @@ irc.on('message', function (nick, to, text) {
       irc.say(to, "YOU'RE TEARING ME APART, FIREFOX!");
     }
     // never question snake-eyes
-    if ( text.match(/(why|what).+(do|with)\sop(s)(\s|\?)?.+/i) ) {
+    if ( text.match(/(why|what).+\sop(s)?.*/i) ) {
       irc.send('mode', to, '-o', nick);
       irc.say(to, nick + ": " + botname_private + " has spoken.");
     }
@@ -133,7 +149,7 @@ irc.on('message', function (nick, to, text) {
 
 // never question snake-eyes on direct messages either.
 // doing it twice to use the cool router.
-watch(/\sop(s)?.+/i, function (nick, to, text) {
+watch(/\sop(s)?.*/i, function (nick, to, text) {
   irc.send('mode', to, '-o', nick);
   irc.say(to, nick + ": " + botname_private + " has spoken.");
 });
@@ -202,17 +218,27 @@ irc_public.on('message', function (nick, to, text) {
       var hour = now.getHours();
       var day  = now.getDay();
 
+      var needshelp = nick +" is looking for help on " + channel_public + " at " + server_public ;
+
       if (( hour >= 10 ) && ( hour <= 19 ) && ( day >= 1 ) && ( day <= 5 )) {
         irc_public.say( to, nick + ": doing it..." );
-        irc.say( "#shark", "hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net" );
+        irc.say( "#shark", "hey guys.  " + needshelp );
         irc_public.say( to, nick + ": pinged the nerds! if they're not here soon, try emailing support@spire.io" );
       }
       else {
         irc_public.say( to, nick + ": i'm looking for nerds, but they work in California from 10am - 7pm Pacific, so no promises" );
-        irc.say( "#shark", "hey guys.  " + nick +" is looking for help on #spire at chat.freenode.net...");
+        irc.say( "#shark", "hey guys.  " + needshelp );
         irc.say( "#shark", nick + " knows it's off hours." );
         irc_public.say( to, nick + ": if no one shows up soon, you can also email them at support@spire.io" );
       }
+
+    // tweet it too?
+      if (twit) {
+        twit.updateStatus(twitter_settings.prepend_messages + needshelp, function(data) {
+          console.log(data);
+        });
+      }
+
     }
 });
 
