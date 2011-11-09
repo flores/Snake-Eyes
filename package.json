@@ -5,7 +5,8 @@
   "author": "bosty <github@borderstylo.com>",
   "dependencies": {
     "irc": ">= 0.3.2",
-    "twitter": ">= 0.1.17"
+    "twitter": ">= 0.1.17",
+    "cookies": ">= 0.1.6"
   },
   "engine": "node 0.4.12"
 }
