@@ -1,0 +1,6 @@
+this.consumer_key = '';
+this.consumer_secret = '';
+this.access_token_key = '';
+this.access_token_secret = '';
+// prepended to twitter updates.  use it to notify users and stuff.
+this.prepend_messages = '';
