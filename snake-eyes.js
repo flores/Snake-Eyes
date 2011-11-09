@@ -212,7 +212,7 @@ irc_public.on('join', function(to, nick) {
 
 
 irc_public.on('message', function (nick, to, text) {
-    if(( /find test/.test( text )) && ( nick != botname_public )) {
+    if(( /find a dev/.test( text )) && ( nick != botname_public )) {
       // check for work hours
       var now  = new Date();
       var hour = now.getHours();
@@ -222,13 +222,13 @@ irc_public.on('message', function (nick, to, text) {
 
       if (( hour >= 10 ) && ( hour <= 19 ) && ( day >= 1 ) && ( day <= 5 )) {
         irc_public.say( to, nick + ": doing it..." );
-        irc.say( "#goaway", "hey guys.  " + needshelp );
+        irc.say( "#shark", "hey guys.  " + needshelp );
         irc_public.say( to, nick + ": pinged the nerds! if they're not here soon, try emailing support@spire.io" );
       }
       else {
         irc_public.say( to, nick + ": i'm looking for nerds, but they work in California from 10am - 7pm Pacific, so no promises" );
-        irc.say( "#goaway", "hey guys.  " + needshelp );
-        irc.say( "#goaway", nick + " knows it's off hours." );
+        irc.say( "#shark", "hey guys.  " + needshelp );
+        irc.say( "#shark", nick + " knows it's off hours." );
         irc_public.say( to, nick + ": if no one shows up soon, you can also email them at support@spire.io" );
       }
 
