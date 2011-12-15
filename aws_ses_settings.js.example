@@ -1,0 +1,4 @@
+this.access-key-id = '';
+this.secret-access-key = '';
+this.emailsender = '';
+this.emailrecipients = '';
