@@ -71,12 +71,12 @@ try {
 // want it to send emails too?  
 // set this up (move aws_ses_settings.js.example to aws_ses_settings.js)
 try {
-  var ses_settings = require('./aws_ses_settings')
+  var aws_ses_settings = require('./aws_ses_settings');
   var AmazonSES = require('amazon-ses');
-  var ses = new AmazonSES(aws_ses_settings.access-key-id, aws_ses_settings.secret-access-key);
-  ses.verifyEmailAddress(aws_ses_settings.emailsender);
+  var ses = new AmazonSES(aws_ses_settings.accesskeyid, aws_ses_settings.secretaccesskey);
 } catch(e) {
   var ses = undefined;
+  console.log(e);
   console.log("if you'd like to send email notifications, please move aws_ses_settings.js.example to aws_ses_settings.js");
 }
 
@@ -217,6 +217,7 @@ irc_public.on('join', function(to, nick) {
   setTimeout( function() {
     if (newmessage == 0) {
   //    irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
+      var needshelp = nick +" is looking for help on " + channel_public + " at " + server_public ;
       irc_public.say( to, "hey " + nick + ".  I'll see if I can find you a developer.");
       if (twit) {
         twit.updateStatus(twitter_settings.prepend_messages + needshelp, function(data) {
@@ -225,13 +226,13 @@ irc_public.on('join', function(to, nick) {
       }
       if (ses) {
         ses.send({
-          from: aws_ses_settings.emailsender,
-          to: aws_ses_settings.emailrecipients,
-          replyTo: aws_ses_settings.emailsender,
-          subject: nick + " is looking for help on " + channel_public + ". <EOM>",
+          from: aws_ses_settings.sender,
+          to: aws_ses_settings.recipients,
+          replyTo: aws_ses_settings.replyto,
+          subject: needshelp,
           body: {
-            text: '',
-            html: ''
+            text: needshelp,
+            html: needshelp
           }
         });
       }
