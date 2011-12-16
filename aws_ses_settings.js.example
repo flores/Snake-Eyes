@@ -1,4 +1,5 @@
-this.access-key-id = '';
-this.secret-access-key = '';
-this.emailsender = '';
-this.emailrecipients = '';
+this.accesskeyid = '';
+this.secretaccesskey = '';
+this.from = '';
+this.replyto = ['',''];
+this.recipients = ['', ''];
