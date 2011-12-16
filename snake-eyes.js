@@ -68,6 +68,18 @@ try {
   console.log("if you'd like to tweet notifications, please move twitter_settings.js.example to twitter_settings.js");
 }
 
+// want it to send emails too?  
+// set this up (move aws_ses_settings.js.example to aws_ses_settings.js)
+try {
+  var aws_ses_settings = require('./aws_ses_settings');
+  var AmazonSES = require('amazon-ses');
+  var ses = new AmazonSES(aws_ses_settings.accesskeyid, aws_ses_settings.secretaccesskey);
+} catch(e) {
+  var ses = undefined;
+  console.log(e);
+  console.log("if you'd like to send email notifications, please move aws_ses_settings.js.example to aws_ses_settings.js");
+}
+
 // k.
 
 // set up the irc clients
@@ -204,7 +216,28 @@ irc_public.on('join', function(to, nick) {
     
   setTimeout( function() {
     if (newmessage == 0) {
-      irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
+  //    irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
+      var needshelp = nick +" joined " + channel_public + " at " + server_public ;
+      irc_public.say( to, "hey " + nick + ".  I'll see if I can find you a developer.");
+      if (twit) {
+        twit.updateStatus(twitter_settings.prepend_messages + needshelp, function(data) {
+          console.log(data);
+        });
+      }
+      if (ses) {
+        ses.send({
+          from: aws_ses_settings.sender,
+          to: aws_ses_settings.recipients,
+          replyTo: aws_ses_settings.replyto,
+          subject: needshelp,
+          body: {
+            text: needshelp,
+            html: needshelp
+          }
+        });
+      }
+      irc.say( "#shark", "hey guys.  " + needshelp );
+
     }
     clearInterval(checkforNewMessage);
   }, message_wait );
@@ -212,7 +245,7 @@ irc_public.on('join', function(to, nick) {
 
 
 irc_public.on('message', function (nick, to, text) {
-    if(( /find a dev/.test( text )) && ( nick != botname_public )) {
+    if(( /find a dev/.test( text )) && ( nick != botname_public )) { 
       // check for work hours
       var now  = new Date();
       var hour = now.getHours();

@@ -6,7 +6,8 @@
   "dependencies": {
     "irc": ">= 0.3.2",
     "twitter": ">= 0.1.17",
-    "cookies": ">= 0.1.6"
+    "cookies": ">= 0.1.6",
+    "amazon-ses": ">= 0.0.3"
   },
   "engine": "node 0.4.12"
 }
