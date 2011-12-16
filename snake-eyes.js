@@ -217,7 +217,7 @@ irc_public.on('join', function(to, nick) {
   setTimeout( function() {
     if (newmessage == 0) {
   //    irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
-      var needshelp = nick +" is looking for help on " + channel_public + " at " + server_public ;
+      var needshelp = nick +" joined " + channel_public + " at " + server_public ;
       irc_public.say( to, "hey " + nick + ".  I'll see if I can find you a developer.");
       if (twit) {
         twit.updateStatus(twitter_settings.prepend_messages + needshelp, function(data) {
@@ -236,6 +236,8 @@ irc_public.on('join', function(to, nick) {
           }
         });
       }
+      irc.say( "#shark", "hey guys.  " + needshelp );
+
     }
     clearInterval(checkforNewMessage);
   }, message_wait );
