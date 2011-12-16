@@ -1,0 +1,5 @@
+this.accesskeyid = '';
+this.secretaccesskey = '';
+this.from = '';
+this.replyto = ['',''];
+this.recipients = ['', ''];
