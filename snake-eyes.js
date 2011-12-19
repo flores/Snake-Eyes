@@ -163,7 +163,7 @@ watch(/lunch/i, function (nick, to, text) {
   var now = new Date(); 
   var day = now.getDay();
     
-  if (day <= 5) {
+  if (day == 5) {
   	irc.say(to, 'Today is Friday. We have conquered the week! Today we feast and drink at Wirtshaus! ' + botname_private + ' has spoken.');
   }
   else {
