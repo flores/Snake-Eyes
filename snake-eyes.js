@@ -131,7 +131,7 @@ irc.on('join', function (channel, nick) {
 
 // nerdery on the internal irc server
 irc.on('message', function (nick, to, text) {
-  var nameRegExp = new RegExp( '^' + botname_private, 'i' );
+  var nameRegExp = new RegExp( botname_private, 'i' );
   if (/^#/.test(to) && (nameRegExp.test(text))) {
     // general handling of messages to snakeeyes in a channel
     var command = text.substr(10).trim();
@@ -175,7 +175,7 @@ watch(/lunch/i, function (nick, to, text) {
   var now = new Date(); 
   var day = now.getDay();
     
-  if (day == 5) {
+  if (day <= 5) {
   	irc.say(to, 'Today is Friday. We have conquered the week! Today we feast and drink at Wirsthaus! ' + botname_private + ' has spoken.');
   }
   else {
