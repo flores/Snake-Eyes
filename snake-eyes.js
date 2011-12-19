@@ -172,10 +172,19 @@ watch(/reload/i, function (nick, to, text) {
 });
 
 watch(/lunch/i, function (nick, to, text) {
-  var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];
+  var now = new Date(); 
+  var day = now.getDay();
+    
+  if (day = 5)
+  irc.say(to, 'Today is Friday. We have conquered the week! Today we feast and drink at Wirsthaus! ' + botname_private + ' has spoken.');
+  }
+  else {
+  var lunch = lunchSpots[Math.floor(Math.random()*lunchSpots.length)];  
   irc.say(to, 'Today we dine at ' + lunch + '. ' + botname_private + ' has spoken.');
   // todo: add chance that snakeyes will pick someone from the room at
   // random to choose the lunch spot
+  // do I need the now variable? I don't see where it comes in.
+  // todo: add a chance that snake-eyes will pick a drinking lunch for fridays.
 });
 
 // nerdery on the external irc server
