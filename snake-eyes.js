@@ -16,7 +16,8 @@ var opusers_public   = [
                        "dyoder",
                        "jxson",
                        "werwolf",
-                       "lo-fi"
+                       "lo-fi",
+                       "thedaniel"
 ];
 
 var botname_private  = "snake-eyes";
@@ -226,10 +227,9 @@ irc_public.on('join', function(to, nick) {
     
   setTimeout( function() {
     if (newmessage == 0) {
-  //    irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'find a dev' and i'll see if nerds are around." );
-      var needshelp = nick +" joined " + channel_public + " at " + server_public ;
-      irc_public.say( to, "hey " + nick + ".  I'll see if I can find you a developer.");
-      if (twit) {
+      irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'get staff' and i'll see if any spire.io folks are around." );
+      var needshelp = nick +" joined " + channel_public + " at " + server_public + ".  just a heads up." ;
+/*      if (twit) {
         twit.updateStatus(twitter_settings.prepend_messages + needshelp, function(data) {
           console.log(data);
         });
@@ -246,6 +246,7 @@ irc_public.on('join', function(to, nick) {
           }
         });
       }
+*/
       irc.say( "#shark", "hey guys.  " + needshelp );
 
     }
@@ -255,7 +256,7 @@ irc_public.on('join', function(to, nick) {
 
 
 irc_public.on('message', function (nick, to, text) {
-    if(( /find a dev/.test( text )) && ( nick != botname_public )) { 
+    if(( /get staff/.test( text )) && ( nick != botname_public )) { 
       // check for work hours
       var now  = new Date();
       var hour = now.getHours();
