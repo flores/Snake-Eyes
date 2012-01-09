@@ -9,15 +9,20 @@ var ElizaBot         = require('elizabot').ElizaBot;
 
 // configuration
 // irc.  server names, guys to auto-op, etc
-var botname_public   = "spirebot";
+var botname_public   = "spire-bot";
 var server_public    = "chat.freenode.com";
-var channel_public   = "#spire";
+var channel_public   = [ 
+			"#spire",
+];
 var opusers_public   = [
                        "dyoder",
+                       "dyoder_",
                        "jxson",
                        "werwolf",
+                       "thedaniel",
                        "lo-fi",
-                       "thedaniel"
+                       "nlacasse",
+			"automatthew"
 ];
 
 var botname_private  = "snake-eyes";
@@ -84,20 +89,22 @@ try {
 // k.
 
 // set up the irc clients
+
 var irc = new Client( 
   server_private, 
   botname_private, 
   { channels: channel_private }
 );
+
 var irc_public = new Client( 
   server_public, 
   botname_public, 
-  { channels: [ channel_public ] }
+  { channels: channel_public }
 );
 
 // set up the http server
 var http = require('http');
-  
+
 irc.on('motd', function () {
   // don't start listening for http traffic until connected on irc
   http.createServer( httpHandler ).listen( http_port );
@@ -227,7 +234,7 @@ irc_public.on('join', function(to, nick) {
     
   setTimeout( function() {
     if (newmessage == 0) {
-      irc_public.say( to, "hey " + nick + ". You're free to hang out, but ask me to 'get staff' and i'll see if any spire.io folks are around." );
+      irc_public.say( to, "hey " + nick + ". You're free to hang out, but say '" + botname_public + ": help' and i'll see if any spire.io folks are around." );
       var needshelp = nick +" joined " + channel_public + " at " + server_public + ".  just a heads up." ;
 /*      if (twit) {
         twit.updateStatus(twitter_settings.prepend_messages + needshelp, function(data) {
@@ -256,7 +263,7 @@ irc_public.on('join', function(to, nick) {
 
 
 irc_public.on('message', function (nick, to, text) {
-    if(( /get staff/.test( text )) && ( nick != botname_public )) { 
+    if(( /spire-bot: help/.test( text )) && ( nick != botname_public )) { 
       // check for work hours
       var now  = new Date();
       var hour = now.getHours();
