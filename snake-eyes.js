@@ -19,7 +19,11 @@ var opusers_public   = [
                        "dyoder_",
                        "jxson",
                        "werwolf",
-                       "thedaniel",
+                       "werwolf_",
+                       "caleban",
+                       "caleban_",
+                       "llakey",
+                       "llakey_",
                        "lo-fi",
                        "nlacasse",
 			"automatthew"
